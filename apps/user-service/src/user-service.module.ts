@@ -11,7 +11,7 @@ import { Mongoose } from '../config/mongoos.module';
 @Module({
   imports: [
     ConfigurationModule,
-    LogModule,
+    // LogModule,
     UserModule,
     Mongoose,
     MongooseModule.forRootAsync({
