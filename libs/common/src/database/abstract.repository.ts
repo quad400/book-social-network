@@ -18,25 +18,24 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     private readonly connection: Connection,
   ) {}
 
-  async save(document: TDocument): Promise<TDocument> {
-    const savedDocument = await document.save();
-    return savedDocument;
-  }
   // Unique check method
   async checkUnique(
     data: Record<string, any>,
     uniqueField: string,
   ): Promise<boolean> {
     const entity = await this.model.findOne({
-      where: {
-        [uniqueField]: data[uniqueField],
-        is_deleted: false,
-      },
+      [uniqueField]: data[uniqueField],
+      is_deleted: false,
     });
 
     if (entity) {
       throw new ConflictException(
-        `${this.model.name} with ${uniqueField} "${data[uniqueField]}" already exists.`,
+        `${this.model.collection.collectionName
+          .toUpperCase()
+          .slice(
+            0,
+            -1,
+          )} with ${uniqueField} "${data[uniqueField]}" already exists.`,
       );
     }
     return true;
@@ -58,16 +57,38 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
       ...document,
       _id: new Types.UUID(),
     });
-    return (await createdDocument.save()).toJSON() as unknown as TDocument;
+    return await createdDocument.save();
   }
 
   async findOne(filterQuery: FilterQuery<TDocument>): Promise<TDocument> {
-    const document = await this.model
-      .findOne(filterQuery, { is_deleted: false })
-      .lean<TDocument>();
+    const document = await this.model.findOne(filterQuery, {
+      is_deleted: false,
+    });
 
     if (!document) {
-      throw new NotFoundException('Document not found.');
+      throw new NotFoundException(
+        `${this.model.collection.collectionName
+          .toUpperCase()
+          .slice(0, -1)} not found.`,
+      );
+    }
+
+    return document;
+  }
+
+  async findOneWithPassword(
+    filterQuery: FilterQuery<TDocument>,
+  ): Promise<TDocument> {
+    const document = await this.model
+      .findOne(filterQuery, { is_deleted: false })
+      .select('+password');
+
+    if (!document) {
+      throw new NotFoundException(
+        `${this.model.collection.collectionName
+          .toUpperCase()
+          .slice(0, -1)} not found.`,
+      );
     }
 
     return document;
@@ -87,7 +108,11 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     );
 
     if (!document) {
-      throw new NotFoundException('Document not found.');
+      throw new NotFoundException(
+        `${this.model.collection.collectionName
+          .toUpperCase()
+          .slice(0, -1)} not found.`,
+      );
     }
 
     return document;
