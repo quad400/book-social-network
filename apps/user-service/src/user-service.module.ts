@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { LogModule } from '../config/logger.module';
 import { ConfigurationModule } from '../config/config.module';
 import { UserModule } from './user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -7,11 +6,12 @@ import { ConfigService } from '@nestjs/config';
 import { BookModule } from './book/book.module';
 import { AuthModule } from './auth/auth.module';
 import { Mongoose } from '../config/mongoos.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from '@app/common';
 
 @Module({
   imports: [
     ConfigurationModule,
-    // LogModule,
     UserModule,
     Mongoose,
     MongooseModule.forRootAsync({
@@ -23,6 +23,12 @@ import { Mongoose } from '../config/mongoos.module';
 
     BookModule,
     AuthModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
   ],
 })
 export class UserServiceModule {}

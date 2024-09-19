@@ -12,7 +12,7 @@ export class User extends AbstractDocument {
   @Prop({ type: String, required: true })
   full_name: string;
 
-  @Prop({ type: String, select: false })
+  @Prop({ type: String })
   password: string;
 
   @Prop({ type: Boolean, default: false })

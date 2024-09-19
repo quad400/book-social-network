@@ -8,7 +8,7 @@ import {
   RegenrateOtpDto,
   VerifyUserDto,
 } from './dto/auth.dto';
-import { BaseResponse } from '@app/common';
+import { AppConfig, BaseResponse } from '@app/common';
 import { generateCode } from './utils';
 import { LoginResponse } from './response/auth.response';
 import { BusinessCode } from '@app/common/enum';
@@ -47,9 +47,11 @@ export class AuthService {
   async login({ email, password }: LoginUserDto) {
     const user = await this.userRepository.findOneWithPassword({ email });
 
+    console.log(AppConfig.JWT_EXPIRES_IN)
     if (!user.is_verified) {
       throw new BadRequestException('Account not verified');
     }
+
     if (!bcrypt.compareSync(password, user.password)) {
       throw new BadRequestException('Invalid credentials');
     }

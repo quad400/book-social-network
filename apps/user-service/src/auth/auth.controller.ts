@@ -21,8 +21,12 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { LoginResponse } from './response/auth.response';
+import { Public } from '@app/common';
+
+
 
 @ApiTags('Authentication')
+@Public()
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
