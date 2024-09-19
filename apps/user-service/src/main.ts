@@ -3,7 +3,7 @@ import { UserServiceModule } from './user-service.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger, VERSION_NEUTRAL, VersioningType } from '@nestjs/common';
 import { Config } from '../config/configuration';
-import { HttpExceptions, ValidatorPipe } from '@app/common';
+import { AppConfig, HttpExceptions, ValidatorPipe } from '@app/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(UserServiceModule);

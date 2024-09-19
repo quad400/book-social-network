@@ -63,7 +63,25 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   async findOne(filterQuery: FilterQuery<TDocument>): Promise<TDocument> {
     const document = await this.model.findOne(filterQuery, {
       is_deleted: false,
-    });
+    })
+
+
+    if (!document) {
+      throw new NotFoundException(
+        `${this.model.collection.collectionName
+          .toUpperCase()
+          .slice(0, -1)} not found.`,
+      );
+    }
+
+    return document;
+  }
+
+  async findById(id: string): Promise<TDocument> {
+    const document = await this.model.findById(id, {
+      is_deleted: false,
+    })
+
 
     if (!document) {
       throw new NotFoundException(
@@ -81,7 +99,7 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   ): Promise<TDocument> {
     const document = await this.model
       .findOne(filterQuery, { is_deleted: false })
-      .select('+password');
+      .select('password');
 
     if (!document) {
       throw new NotFoundException(

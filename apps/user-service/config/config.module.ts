@@ -11,8 +11,6 @@ import * as Joi from 'joi';
         PORT: Joi.number().required(),
         HOST: Joi.string().required(),
         MONGODB_URI: Joi.string().required(),
-        JWT_EXPIRES_IN: Joi.string().required(),
-        JWT_SECRET: Joi.string().required(),
       }),
       envFilePath: './apps/user-service/.env',
     }),
