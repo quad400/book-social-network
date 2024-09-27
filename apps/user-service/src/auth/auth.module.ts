@@ -4,6 +4,8 @@ import { AuthController } from './auth.controller';
 import { UserRepository } from '../user/repository/user.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { AppConfig } from '@app/common';
+import { TokenRepository } from '../user/repository/token.repository';
+import { ProfileRepository } from '../user/repository/profile.repository';
 
 @Module({
   imports: [
@@ -14,6 +16,6 @@ import { AppConfig } from '@app/common';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserRepository],
+  providers: [AuthService, UserRepository, TokenRepository, ProfileRepository],
 })
 export class AuthModule {}

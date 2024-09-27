@@ -1,9 +1,11 @@
+import { AbstractDocument } from '@app/common';
 import { BookEnum } from '@app/common/enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { User } from '../../user/model/user.model';
+
 
 @Schema({ versionKey: false, timestamps: true })
-export class Book {
+export class Book extends AbstractDocument {
   @Prop({ type: String, required: true })
   title: string;
 
@@ -28,8 +30,9 @@ export class Book {
   @Prop({ type: Boolean, default: false })
   achieved: boolean;
 
-  @Prop({ type: [{ type: Types.UUID, ref: 'BookFeedback' }], default: [] })
-  book_feedbacks: Types.UUID[];
+  @Prop({type: User, required: true})
+  owner: User
+
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);

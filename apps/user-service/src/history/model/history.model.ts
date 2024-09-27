@@ -1,21 +1,24 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
 import { User } from '../../user/model/user.model';
-import { Book } from './book.model';
+import { AbstractDocument } from '@app/common';
+import { Types } from 'mongoose';
 
 @Schema({ versionKey: false, timestamps: true })
-export class BookHistory {
+export class History extends AbstractDocument{
   @Prop({ type: User, required: true })
   borrower: User;
 
-  @Prop({ type: Book, required: true })
-  book_cover: Book;
+  @Prop({ type: Types.ObjectId, ref: "Book", required: true })
+  book: Types.ObjectId;
 
   @Prop({ type: Boolean, default: false })
   retured: boolean;
 
   @Prop({ type: Boolean, default: false })
   return_approved: boolean;
+
+  @Prop({type: String, default: null})
+  returned_condition: string
 }
 
-export const BookHistorySchema = SchemaFactory.createForClass(BookHistory);
+export const HistorySchema = SchemaFactory.createForClass(History);

@@ -8,6 +8,7 @@ import {
   ConflictException,
   NotFoundException,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import { BaseResponse } from '../utils';
@@ -45,6 +46,14 @@ export class HttpExceptions implements ExceptionFilter {
         responseBody = BaseResponse.error({
           businessCode: BusinessCode.BAD_REQUEST,
           businessDescription: BusinessDescription.BAD_REQUEST,
+          errors: exception.message,
+        });
+        break;
+        
+      case exception instanceof UnauthorizedException:
+        responseBody = BaseResponse.error({
+          businessCode: BusinessCode.UNAUTHORIZED,
+          businessDescription: BusinessDescription.UNAUTHORIZED,
           errors: exception.message,
         });
         break;

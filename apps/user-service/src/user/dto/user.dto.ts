@@ -6,7 +6,7 @@ export class UpdateUserDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  full_name?: string;
+  fullname?: string;
 
   @ApiProperty()
   @IsString()
@@ -14,12 +14,12 @@ export class UpdateUserDto {
   avatar?: string;
 
   @ApiProperty()
-  @IsEnum(UserRole)
+  @IsString()
   @IsOptional()
-  role?: UserRole;
+  bio?: string;
 
   @ApiProperty()
-  @IsEmail()
+  @IsString()
   @IsOptional()
-  email?: string;
+  location?: string;
 }
