@@ -39,7 +39,7 @@ import { AppConfig } from '@app/common/config';
           secret: AppConfig.JWT_SECRET,
         });
 
-        request['userId'] = payload?.sub._id;
+        request['userId'] = payload?.sub
       } catch {
         throw new UnauthorizedException("Invalid User Token");
       }
