@@ -13,10 +13,10 @@ export class UserService {
     private readonly profileRepository: ProfileRepository,
   ) {}
 
-  async updateMe(data: UpdateUserDto, pk: string) {
-    const user = await this.userRepository.findById(pk);
+  async updateMe(data: UpdateUserDto, _id: string) {
+    const user = await this.userRepository.findById(_id);
     await this.profileRepository.findOneAndUpdate(
-      { pk: user.profile.pk },
+      { _id: user.profile._id },
       data,
     );
 
@@ -47,7 +47,7 @@ export class UserService {
 
     if (user.account_blocked) {
       await this.userRepository.findOneAndUpdate(
-        { pk: user.pk },
+        { _id: user._id },
         { account_blocked: false },
       );
       return BaseResponse.success({
@@ -56,7 +56,7 @@ export class UserService {
       });
     } else {
       await this.userRepository.findOneAndUpdate(
-        { pk: user.pk },
+        { _id: user._id },
         { account_blocked: true },
       );
       return BaseResponse.success({

@@ -19,13 +19,13 @@ export class UserController {
   @Patch('update')
   @ApiOperation({ summary: 'Update User Information' })
   async updateMe(@Body() data: UpdateUserDto, @CurrentUser() user: User) {
-    return await this.userService.updateMe(data, user.pk);
+    return await this.userService.updateMe(data, user._id);
   }
 
   @Get('me')
   @ApiOperation({ summary: 'Fetch User Information using user token' })
   async getMe(@CurrentUser() user: User) {
-    return await this.userService.getMe(user.pk);
+    return await this.userService.getMe(user._id);
   }
 
   @ApiOperation({ description: 'Fetch User Information using user id' })

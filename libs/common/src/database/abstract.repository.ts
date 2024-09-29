@@ -1,7 +1,4 @@
-import {
-  ConflictException,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Connection, FilterQuery, Model, Types, UpdateQuery } from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
 import { v4 as uuidV4 } from 'uuid';
@@ -39,17 +36,20 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   async create(document: Record<string, any>): Promise<TDocument> {
     const createdDocument = new this.model({
       ...document,
-      pk: uuidV4(),
+      _id: uuidV4(),
     });
     return await createdDocument.save();
   }
 
-  async findOne(filterQuery: FilterQuery<TDocument>, disableCheck=false): Promise<TDocument> {
+  async findOne(
+    filterQuery: FilterQuery<TDocument>,
+    disableCheck = false,
+  ): Promise<TDocument> {
     const document = await this.model
       .findOne(filterQuery, {
         is_deleted: false,
       })
-      .select('-password').select("-_id");
+      .select('-password');
 
     if (!document && !disableCheck) {
       throw new NotFoundException(
@@ -64,8 +64,8 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
   async findById(id: string): Promise<TDocument> {
     const document = await this.model
-      .findOne({ pk: id, is_deleted: false })
-      .select('-password').select("-_id");
+      .findOne({ _id: id, is_deleted: false })
+      .select('-password');
 
     if (!document) {
       throw new NotFoundException(
@@ -77,23 +77,6 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     return document;
   }
 
-  async findOneWithPassword(
-    filterQuery: FilterQuery<TDocument>,
-  ): Promise<TDocument> {
-    const document = await this.model
-      .findOne(filterQuery, { is_deleted: false })
-      .select('password');
-
-    if (!document) {
-      throw new NotFoundException(
-        `${this.model.collection.collectionName
-          .toUpperCase()
-          .slice(0, -1)} not found.`,
-      );
-    }
-
-    return document;
-  }
 
   async findOneAndUpdate(
     filterQuery: FilterQuery<TDocument>,
@@ -116,6 +99,11 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     }
 
     return document;
+  }
+
+  async find({ filterQuery }: { filterQuery?: FilterQuery<TDocument> }): Promise<TDocument[]> {
+    const items = await this.model.find({ ...filterQuery, is_deleted: false });
+    return items;
   }
 
   async findPaginated({
@@ -147,7 +135,6 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
       .sort(sortFilter)
       .skip(skip)
       .limit(limit)
-      .select("-_id")
       .exec();
 
     // Count the total number of documents for pagination metadata

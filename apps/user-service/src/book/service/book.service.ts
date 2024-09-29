@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { BookRepository } from './respository/book.repository';
-import { CreateBookDto, UpdateBookDto } from './dto/book.dto';
-import { UserRepository } from '../user/repository/user.repository';
+import { BookRepository } from '../respository/book.repository';
+import { CreateBookDto, UpdateBookDto } from '../dto/book.dto';
+import { UserRepository } from '../../user/repository/user.repository';
 import { BaseResponse } from '@app/common';
 import { BusinessCode } from '@app/common/enum';
 import { QueryDto } from '@app/common';
@@ -28,7 +28,7 @@ export class BookService {
     await this.bookRepository.checkUnique(data, 'title');
 
     await this.bookRepository.findOneAndUpdate(
-      { 'owner.pk': userId, pk: bookId },
+      { 'owner._id': userId, _id: bookId },
       data,
     );
 
@@ -57,9 +57,10 @@ export class BookService {
   }
 
   async getMyBooks(query: QueryDto, userId: string) {
+    console.log(userId)
     const books = await this.bookRepository.findPaginated({
       query,
-      filterQuery: { 'owner.pk': userId },
+      filterQuery: { 'owner._id': userId },
     });
     return BaseResponse.success({
       businessCode: BusinessCode.OK,
@@ -71,7 +72,7 @@ export class BookService {
   async getDeletedBooks(query: QueryDto, userId: string) {
     const books = await this.bookRepository.findPaginated({
       query,
-      filterQuery: { 'owner.pk': userId, is_deleted: true },
+      filterQuery: { 'owner._id': userId, is_deleted: true },
     });
     return BaseResponse.success({
       businessCode: BusinessCode.OK,
@@ -81,7 +82,7 @@ export class BookService {
   }
 
   async deleteBook(userId: string, bookId: string) {
-    await this.bookRepository.softDelete({ 'owner.pk': userId, pk: bookId });
+    await this.bookRepository.softDelete({ 'owner._id': userId, _id: bookId });
     return BaseResponse.success({
       businessCode: BusinessCode.OK,
       businessDescription: 'Book Successfully deleted',
@@ -89,7 +90,7 @@ export class BookService {
   }
 
   async deleteBookPermanently(userId: string, bookId: string) {
-    await this.bookRepository.delete({ 'owner.pk': userId});
+    await this.bookRepository.delete({ 'owner._id': userId});
     return BaseResponse.success({
       businessCode: BusinessCode.OK,
       businessDescription: 'Book Successfully deleted permanently',
@@ -97,7 +98,7 @@ export class BookService {
   }
 
   async restoreBook(userId: string, bookId: string) {
-    await this.bookRepository.restore({ 'owner.pk': userId, pk: bookId });
+    await this.bookRepository.restore({ 'owner._id': userId, _id: bookId });
     return BaseResponse.success({
       businessCode: BusinessCode.OK,
       businessDescription: 'Book Successfully Restored',
@@ -106,13 +107,13 @@ export class BookService {
 
   async toggleArchievedBook(userId: string, bookId: string) {
     const book = await this.bookRepository.findOne({
-      'owner.pk': userId,
-      pk: bookId,
+      'owner._id': userId,
+      _id: bookId,
     });
 
     if (book.achieved) {
       await this.bookRepository.findOneAndUpdate(
-        { 'owner.pk': userId, pk: bookId },
+        { 'owner._id': userId, _id: bookId },
         { achieved: false },
       );
       return BaseResponse.success({
@@ -121,7 +122,7 @@ export class BookService {
       });
     } else {
       await this.bookRepository.findOneAndUpdate(
-        { 'owner.pk': userId, pk: bookId },
+        { 'owner._id': userId, _id: bookId },
         { achieved: true },
       );
 
@@ -134,13 +135,13 @@ export class BookService {
 
   async toggleShareableBook(userId: string, bookId: string) {
     const book = await this.bookRepository.findOne({
-      'owner.pk': userId,
-      pk: bookId,
+      'owner._id': userId,
+      _id: bookId,
     });
 
     if (book.shareable) {
       await this.bookRepository.findOneAndUpdate(
-        { 'owner.pk': userId, pk: bookId },
+        { 'owner._id': userId, _id: bookId },
         { shareable: false },
       );
       return BaseResponse.success({
@@ -149,7 +150,7 @@ export class BookService {
       });
     } else {
       await this.bookRepository.findOneAndUpdate(
-        { 'owner.pk': userId, pk: bookId },
+        { 'owner._id': userId, _id: bookId },
         { shareable: true },
       );
 

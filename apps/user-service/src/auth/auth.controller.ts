@@ -15,6 +15,7 @@ import {
   VerifyUserDto,
 } from './dto/auth.dto';
 import {
+  ApiBody,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
@@ -39,9 +40,25 @@ export class AuthController {
   }
   
   @Post('login')
-  @ApiOperation({ summary: 'Authenticate User' })
+  @ApiOperation({ summary: '' })
+  @ApiBody({
+    description: "Authenticate User",
+    required: true,
+    schema: {
+      type: "object",
+      properties: {
+        username: {
+          type: "string",
+          example: "tester"
+        },
+        password: {
+          type: "string",
+          example: "test1234"
+        }
+      }
+    }
+  })
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: LoginResponse, status: HttpStatus.OK })
   async login(@Body() data: LoginUserDto) {
     return await this.authService.login(data);
   }

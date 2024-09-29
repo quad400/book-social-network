@@ -9,7 +9,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { BookService } from './book.service';
+import { BookService } from '../service/book.service';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -18,8 +18,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CurrentUser, QueryDto } from '@app/common';
-import { User } from '../user/model/user.model';
-import { CreateBookDto, UpdateBookDto } from './dto/book.dto';
+import { User } from '../../user/model/user.model';
+import { CreateBookDto, UpdateBookDto } from '../dto/book.dto';
 
 @ApiTags('Book')
 @Controller('books')
@@ -30,7 +30,7 @@ export class BookController {
   @ApiOperation({ description: 'Create New Book' })
   @Post('create-book')
   async createBook(@CurrentUser() user: User, @Body() data: CreateBookDto) {
-    return await this.bookService.createBook(user.pk, data);
+    return await this.bookService.createBook(user._id, data);
   }
 
   @ApiOperation({ description: 'Update Book' })
@@ -41,7 +41,7 @@ export class BookController {
     @Param('bookId') bookId: string,
     @Body() data: UpdateBookDto,
   ) {
-    return await this.bookService.updateBook(user.pk, bookId, data);
+    return await this.bookService.updateBook(user._id, bookId, data);
   }
 
   @ApiOperation({ description: 'Get Book by Id' })
@@ -124,7 +124,7 @@ export class BookController {
   })
   @Get('get-my-books')
   async getMyBooks(@Query() query: QueryDto, @CurrentUser() user: User) {
-    return await this.bookService.getMyBooks(query, user.pk);
+    return await this.bookService.getMyBooks(query, user._id);
   }
 
   @ApiOperation({ description: 'Get Deleted Books' })
@@ -162,37 +162,37 @@ export class BookController {
   })
   @Get('get-deleted-books')
   async getDeletedBooks(@Query() query: QueryDto, @CurrentUser() user: User) {
-    return await this.bookService.getDeletedBooks(query, user.pk);
+    return await this.bookService.getDeletedBooks(query, user._id);
   }
 
   @ApiOperation({ description: 'Delete Book' })
   @Delete('delete-book/:bookId')
   async deleteBook(@Param('bookId') bookId: string, @CurrentUser() user: User) {
-    return await this.bookService.deleteBook(user.pk, bookId);
+    return await this.bookService.deleteBook(user._id, bookId);
   }
 
   @ApiOperation({ description: 'Restore Book' })
   @Put('restore-book/:bookId')
   async restoreBook(@Param('bookId') bookId: string, @CurrentUser() user: User) {
-    return await this.bookService.restoreBook(user.pk, bookId);
+    return await this.bookService.restoreBook(user._id, bookId);
   }
 
   @ApiOperation({ description: 'Archieved And UnArchieved Book' })
   @Put('archieved-unarchieved-book/:bookId')
   async toggleArchievedBook(@Param('bookId') bookId: string, @CurrentUser() user: User) {
-    return await this.bookService.toggleArchievedBook(user.pk, bookId);
+    return await this.bookService.toggleArchievedBook(user._id, bookId);
   }
 
   @ApiOperation({ description: 'Share And UnShare Book' })
   @Put('share-unshare-book/:bookId')
   async toggleShareableBook(@Param('bookId') bookId: string, @CurrentUser() user: User) {
-    return await this.bookService.toggleShareableBook(user.pk, bookId);
+    return await this.bookService.toggleShareableBook(user._id, bookId);
   }
 
   @ApiOperation({ description: 'Delete Book Permanently' })
   @Delete('delete-book-permanently/:bookId')
   async deleteBookPermanently(@Param('bookId') bookId: string, @CurrentUser() user: User) {
-    return await this.bookService.deleteBookPermanently(user.pk, bookId);
+    return await this.bookService.deleteBookPermanently(user._id, bookId);
   }
 
 

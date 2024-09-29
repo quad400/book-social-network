@@ -7,9 +7,9 @@ import {
   HistorySchema,
 } from '../src/history/model/history.model';
 import {
-  BookFeedback,
-  BookFeedbackSchema,
-} from '../src/book/model/book-feedback.model';
+  Feedback,
+  FeedbackSchema,
+} from '../src/book/model/feedback.model';
 import { Token, TokenSchema } from '../src/user/model/token.model';
 import { Profile, ProfileSchema } from '../src/user/model/profile.model';
 
@@ -22,7 +22,7 @@ import { Profile, ProfileSchema } from '../src/user/model/profile.model';
       { name: Profile.name, schema: ProfileSchema },
       { name: Book.name, schema: BookSchema },
       { name: History.name, schema: HistorySchema },
-      { name: BookFeedback.name, schema: BookFeedbackSchema },
+      { name: Feedback.name, schema: FeedbackSchema },
     ]),
   ],
   exports: [
@@ -30,7 +30,7 @@ import { Profile, ProfileSchema } from '../src/user/model/profile.model';
       { name: User.name, schema: UserSchema },
       { name: Book.name, schema: BookSchema },
       { name: History.name, schema: HistorySchema },
-      { name: BookFeedback.name, schema: BookFeedbackSchema },
+      { name: Feedback.name, schema: FeedbackSchema },
     ]),
   ],
 })

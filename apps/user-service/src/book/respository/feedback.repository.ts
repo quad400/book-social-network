@@ -2,17 +2,17 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Model, Connection, FilterQuery } from 'mongoose';
 import { AbstractRepository, QueryDto } from '@app/common';
-import { History } from '../model/history.model';
+import { Feedback } from '../model/feedback.model';
 
 @Injectable()
-export class HistoryRepository extends AbstractRepository<History> {
-  protected readonly logger = new Logger(HistoryRepository.name);
+export class FeedbackRepository extends AbstractRepository<Feedback> {
+  protected readonly logger = new Logger(FeedbackRepository.name);
 
   constructor(
-    @InjectModel(History.name) historyModel: Model<History>,
+    @InjectModel(Feedback.name) feedbackModel: Model<Feedback>,
     @InjectConnection() connection: Connection,
   ) {
-    super(historyModel, connection);
+    super(feedbackModel, connection);
   }
 
   async findPaginated({
@@ -20,9 +20,9 @@ export class HistoryRepository extends AbstractRepository<History> {
     filterQuery,
   }: {
     query: QueryDto;
-    filterQuery?: FilterQuery<History>;
+    filterQuery?: FilterQuery<Feedback>;
   }): Promise<{
-    items: History[];
+    items: Feedback[];
     totalItems: number;
     totalPages: number;
     currentPage: number;
@@ -52,7 +52,7 @@ export class HistoryRepository extends AbstractRepository<History> {
       .skip(skip)
       .limit(limit)
       .populate({
-        path: 'borrower',
+        path: 'user',
         select: 'username email profile',
       })
       .populate({

@@ -59,12 +59,12 @@ export class AuthService {
     let user: User;
 
     if (email) {
-      user = await this.userRepository.findOneWithPassword({ email });
+      user = await this.userRepository.findOne({ email });
       if (!user.account_verified) {
         throw new BadRequestException('Account not verified');
       }
     } else {
-      user = await this.userRepository.findOneWithPassword({ username });
+      user = await this.userRepository.findOne({ username });
     }
 
     if (!bcrypt.compareSync(password, user.password)) {
@@ -80,7 +80,7 @@ export class AuthService {
   }
 
   async verify({ email, code, type }: VerifyUserDto) {
-    const user = await this.userRepository.findOneWithPassword({ email });
+    const user = await this.userRepository.findOne({ email });
 
     const token = await this.tokenRepository.findOne({ user: user.id });
 
@@ -95,7 +95,7 @@ export class AuthService {
       user.account_verified = true;
       await user.save();
     }
-    await this.tokenRepository.delete({ pk: token.pk });
+    await this.tokenRepository.delete({ _id: token._id });
 
     const access_token = this.jwtService.sign({ sub: user });
 
@@ -107,9 +107,9 @@ export class AuthService {
   }
 
   async regenerate({ email }: RegenrateOtpDto) {
-    const user = await this.userRepository.findOneWithPassword({ email });
+    const user = await this.userRepository.findOne({ email });
     const token = await this.tokenRepository.findOne({ user: user.id });
-    await this.tokenRepository.delete({ pk: token.pk });
+    await this.tokenRepository.delete({ _id: token._id });
 
     const code = generateCode();
 
@@ -134,7 +134,7 @@ export class AuthService {
     confirm_password,
     password,
   }: ChangePasswordDto) {
-    const user = await this.userRepository.findOneWithPassword({ email });
+    const user = await this.userRepository.findOne({ email });
 
     if (password !== confirm_password) {
       throw new BadRequestException('Password Mismatch');

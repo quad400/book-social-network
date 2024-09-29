@@ -4,7 +4,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { User } from '../../user/model/user.model';
 
 
-@Schema({ versionKey: false, timestamps: true })
+@Schema({ versionKey: false, timestamps: true,strict:false })
 export class Book extends AbstractDocument {
   @Prop({ type: String, required: true })
   title: string;
