@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, UseInterceptors } from '@nestjs/common';
 import { HistoryService } from './history.service';
 import {
   ApiBearerAuth,
@@ -9,7 +9,10 @@ import {
 import { CurrentUser, QueryDto, QueryWithoutSearchDto } from '@app/common';
 import { User } from '../user/model/user.model';
 import { ApproveReturnedBookDto } from './dto/history.dto';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
+
+@UseInterceptors(CacheInterceptor)
 @ApiTags('History')
 @ApiBearerAuth()
 @Controller('history')
@@ -22,6 +25,7 @@ export class HistoryController {
     return await this.historyService.borrowBook(user._id, bookId);
   }
 
+  @CacheKey("GET_BORROWED_BOOKS")
   @ApiOperation({ description: 'Get Borrowed Books' })
   @ApiQuery({
     name: 'page',
@@ -49,7 +53,8 @@ export class HistoryController {
   async getBorrowedBooks(@Query() query: QueryWithoutSearchDto, @CurrentUser() user: User) {
     return await this.historyService.getBorrowedBooks(user._id, query);
   }
-
+  
+  @CacheKey("GET_BORROWED_BOOK")
   @Get('get-borrowed-book/:borrowedBookId')
   async getBorrowedBook(@Param('borrowedBookId') borrowedBookId: string) {
     return await this.historyService.getBorrowedBook(borrowedBookId);
@@ -79,6 +84,7 @@ export class HistoryController {
     );
   }
 
+  @CacheKey("GET_LEND_BOOKS")
   @ApiOperation({ description: 'Get Lend Books' })
   @ApiQuery({
     name: 'page',

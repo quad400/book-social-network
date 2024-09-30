@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { BookService } from '../service/book.service';
 import {
@@ -20,7 +21,10 @@ import {
 import { CurrentUser, QueryDto } from '@app/common';
 import { User } from '../../user/model/user.model';
 import { CreateBookDto, UpdateBookDto } from '../dto/book.dto';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
+@UseInterceptors(CacheInterceptor)
+@CacheTTL(30000)
 @ApiTags('Book')
 @Controller('books')
 @ApiBearerAuth()
@@ -43,14 +47,16 @@ export class BookController {
   ) {
     return await this.bookService.updateBook(user._id, bookId, data);
   }
-
+  
+  @CacheKey("GET_BOOK")
   @ApiOperation({ description: 'Get Book by Id' })
   @ApiParam({ name: 'bookId' })
   @Get('get-book/:bookId')
   async getBook(@Param('bookId') bookId: string) {
     return await this.bookService.getBook(bookId);
   }
-
+  
+  @CacheKey("GET_BOOKS")
   @ApiOperation({ description: 'Get Books' })
   @ApiQuery({
     name: 'page',
@@ -89,6 +95,7 @@ export class BookController {
     return await this.bookService.getBooks(query);
   }
 
+  @CacheKey("GET_MY_BOOKS")
   @ApiOperation({ description: 'Get My Books' })
   @ApiQuery({
     name: 'page',

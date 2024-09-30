@@ -5,7 +5,11 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/book-social-network/tsconfig.app.json"
+    "tsConfigPath": "apps/book-social-network/tsconfig.app.json",
+    "assets": [{
+      "include": "apps/**/src/templates/*",
+      "outDir": "dist"
+    }]
   },
   "monorepo": true,
   "root": "apps/book-social-network",
@@ -25,6 +29,7 @@
       "entryFile": "main",
       "sourceRoot": "apps/user-service/src",
       "compilerOptions": {
+        "assets": ["templates/**"],
         "tsConfigPath": "apps/user-service/tsconfig.app.json"
       }
     },

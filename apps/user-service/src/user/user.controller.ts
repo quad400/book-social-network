@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
   ApiBearerAuth,
@@ -9,7 +9,10 @@ import {
 import { User } from './model/user.model';
 import { CurrentUser } from '@app/common';
 import { UpdateUserDto } from './dto/user.dto';
+import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
 
+
+@UseInterceptors(CacheInterceptor)
 @ApiTags('User')
 @ApiBearerAuth()
 @Controller('user')
@@ -22,12 +25,14 @@ export class UserController {
     return await this.userService.updateMe(data, user._id);
   }
 
+  @CacheKey("GET_USER")
   @Get('me')
   @ApiOperation({ summary: 'Fetch User Information using user token' })
   async getMe(@CurrentUser() user: User) {
     return await this.userService.getMe(user._id);
   }
-
+  
+  @CacheKey("GET_USER_BY_ID")
   @ApiOperation({ description: 'Fetch User Information using user id' })
   @ApiParam({ name: 'userId', type: String, description: 'User ID' })
   @Get('profile/:userId')

@@ -1,4 +1,4 @@
-import { Config } from 'apps/user-service/config/configuration';
+import { Config } from "@app/common";
 
 export function generateCode(): string {
   if (Config.IS_PRODUCTION) {

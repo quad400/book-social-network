@@ -6,6 +6,7 @@ import {
   Patch,
   Post,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -17,7 +18,11 @@ import { FeedbackService } from '../service/feedback.service';
 import { CurrentUser, QueryDto, QueryWithoutSearchDto } from '@app/common';
 import { User } from '../../user/model/user.model';
 import { AddFeedbackDto } from '../dto/feedback.dto';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
+
+@UseInterceptors(CacheInterceptor)
+@CacheTTL(30000)
 @ApiTags('Feedback')
 @ApiBearerAuth()
 @Controller('feedbacks')
@@ -44,12 +49,14 @@ export class FeedbackController {
     );
   }
   
+  @CacheKey("GET_FEEDBACK")
   @ApiOperation({description: "Get Feedback By Id"})
   @Get('get-feedback/:feedbackId')
   async getFeedback(@Param('feedbackId') feedbackId: string) {
     return await this.feedbackService.getFeedback(feedbackId);
   }
-
+  
+  @CacheKey("GET_FEEDBACKS")
   @ApiOperation({ description: 'Get Feedbacks' })
   @ApiQuery({
     name: 'page',

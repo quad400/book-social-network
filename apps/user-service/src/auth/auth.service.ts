@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserRepository } from '../user/repository/user.repository';
 import {
   ChangePasswordDto,
@@ -8,14 +8,15 @@ import {
   RegenrateOtpDto,
   VerifyUserDto,
 } from './dto/auth.dto';
-import { BaseResponse } from '@app/common';
+import { BaseResponse, Config, MailProps } from '@app/common';
 import { generateCode } from './utils';
 import { BusinessCode } from '@app/common/enum';
 import { JwtService } from '@nestjs/jwt';
 import { TokenRepository } from '../user/repository/token.repository';
 import { User } from '../user/model/user.model';
 import { ProfileRepository } from '../user/repository/profile.repository';
-import { Types } from 'mongoose';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +25,9 @@ export class AuthService {
     private readonly tokenRepository: TokenRepository,
     private readonly profileRepository: ProfileRepository,
     private jwtService: JwtService,
+
+    // @InjectQueue(Config.SEND_EMAIL_QUEUE)
+    // private readonly sendEmailQueue: Queue,
   ) {}
 
   async create(data: CreateUserDto) {
@@ -48,7 +52,13 @@ export class AuthService {
       user: user.id,
     });
 
-    // await this.createUserQueue.add({ code, user });
+    const mailData: MailProps = {
+      to: data.email,
+      token: code,
+      username: data.username,
+    };
+
+    // await this.sendEmailQueue.add('welcome', mailData);
     return BaseResponse.success({
       businessCode: BusinessCode.CREATED,
       businessDescription: 'User created successfully',
@@ -108,20 +118,28 @@ export class AuthService {
 
   async regenerate({ email }: RegenrateOtpDto) {
     const user = await this.userRepository.findOne({ email });
-    const token = await this.tokenRepository.findOne({ user: user.id });
-    await this.tokenRepository.delete({ _id: token._id });
+    const token = await this.tokenRepository.findOne({ user: user._id }, true);
+
+    if (token) {
+      await this.tokenRepository.delete({ _id: token._id });
+    }
 
     const code = generateCode();
 
     await this.tokenRepository.create({
-      document: {
-        token: code,
-        token_expired_at: new Date(Date.now() + 1000 * 60 * 3),
-        user: user.id,
-      },
+      token: code,
+      token_expired_at: new Date(Date.now() + 1000 * 60 * 3),
+      user: user._id,
     });
 
-    // await this.createUserQueue.add({ code, user });
+    
+    const mailData: MailProps = {
+      to: user.email,
+      token: code,
+      username: user.username,
+    };
+
+    // await this.sendEmailQueue.add('resend-code', mailData);
 
     return BaseResponse.success({
       businessCode: BusinessCode.OK,

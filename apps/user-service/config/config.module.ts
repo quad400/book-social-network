@@ -11,8 +11,11 @@ import * as Joi from 'joi';
         PORT: Joi.number().required(),
         HOST: Joi.string().required(),
         MONGODB_URI: Joi.string().required(),
+        REDIS_URL: Joi.string().required(),
+        REDIS_HOST: Joi.string().required(),
+        REDIS_PORT: Joi.number().required(),
       }),
-      envFilePath: './apps/user-service/.env',
+      envFilePath: '.env',
     }),
   
   ],
